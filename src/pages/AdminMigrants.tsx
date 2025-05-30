@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,16 +17,16 @@ const AdminMigrants = () => {
   const [searchOccupation, setSearchOccupation] = useState("");
   
   const [migrants, setMigrants] = useState<Migrant[]>([
-    { id: 5201, fullName: "dmans mark", birthYear: 2025, birthPlace: "dansd", occupation: "kadsnda", arrivalYear: 2025, region: "Veneto", settlement: "Darwin", hasPhoto: false },
-    { id: 256, fullName: "Donato Petrilli", birthYear: 1920, birthPlace: "Naples", occupation: "Welder", arrivalYear: 1974, region: "Campania", settlement: "Katherine", hasPhoto: false },
-    { id: 512, fullName: "Lesley Phillippa Vita", birthYear: 1925, birthPlace: "Rome", occupation: "Home Duties", arrivalYear: 1974, region: "Lazio", settlement: "Darwin", hasPhoto: false },
-    { id: 768, fullName: "Mario Isatti", birthYear: 1922, birthPlace: "Milan", occupation: "", arrivalYear: 1974, region: "Lombardy", settlement: "Alice Springs", hasPhoto: false },
-    { id: 1024, fullName: "Concetta Mercorella", birthYear: 1930, birthPlace: "Bari", occupation: "", arrivalYear: 1974, region: "Puglia", settlement: "Tennant Creek", hasPhoto: false },
-    { id: 1280, fullName: "Bruno Niceforo", birthYear: 1928, birthPlace: "Palermo", occupation: "Shop Proprietor", arrivalYear: 1974, region: "Sicily", settlement: "Katherine", hasPhoto: false },
-    { id: 1536, fullName: "Bradden Arthur Bellette", birthYear: 1940, birthPlace: "Venice", occupation: "Fireman", arrivalYear: 1975, region: "Veneto", settlement: "Darwin", hasPhoto: false },
-    { id: 1792, fullName: "Margaret Ann Zerna", birthYear: 1935, birthPlace: "Florence", occupation: "Teacher", arrivalYear: 1975, region: "Tuscany", settlement: "Alice Springs", hasPhoto: false },
-    { id: 2048, fullName: "Rosita Delores Cigobia", birthYear: 1945, birthPlace: "Bologna", occupation: "Public Servant", arrivalYear: 1975, region: "Emilia-Romagna", settlement: "Katherine", hasPhoto: false },
-    { id: 2304, fullName: "Violet Lillian Del Baldori", birthYear: 1950, birthPlace: "Genoa", occupation: "", arrivalYear: 1975, region: "Liguria", settlement: "Darwin", hasPhoto: false },
+    { id: 5201, firstName: "Mark", lastName: "Dmans", fullName: "Mark Dmans", birthYear: 1995, birthPlace: "Melbourne", occupation: "Developer", arrivalYear: 2020, region: "Victoria", settlement: "Darwin", hasPhoto: false, photos: [], biography: "A young developer from Melbourne." },
+    { id: 256, firstName: "Donato", lastName: "Petrilli", fullName: "Donato Petrilli", birthYear: 1920, birthPlace: "Naples", occupation: "Welder", arrivalYear: 1974, region: "Campania", settlement: "Katherine", hasPhoto: false, photos: [], biography: "Skilled welder from Naples." },
+    { id: 512, firstName: "Lesley", lastName: "Vita", fullName: "Lesley Phillippa Vita", birthYear: 1925, birthPlace: "Rome", occupation: "Home Duties", arrivalYear: 1974, region: "Lazio", settlement: "Darwin", hasPhoto: false, photos: [], biography: "Homemaker from Rome." },
+    { id: 768, firstName: "Mario", lastName: "Isatti", fullName: "Mario Isatti", birthYear: 1922, birthPlace: "Milan", occupation: "", arrivalYear: 1974, region: "Lombardy", settlement: "Alice Springs", hasPhoto: false, photos: [], biography: "Migrant from Milan." },
+    { id: 1024, firstName: "Concetta", lastName: "Mercorella", fullName: "Concetta Mercorella", birthYear: 1930, birthPlace: "Bari", occupation: "", arrivalYear: 1974, region: "Puglia", settlement: "Tennant Creek", hasPhoto: false, photos: [], biography: "From Bari, Puglia." },
+    { id: 1280, firstName: "Bruno", lastName: "Niceforo", fullName: "Bruno Niceforo", birthYear: 1928, birthPlace: "Palermo", occupation: "Shop Proprietor", arrivalYear: 1974, region: "Sicily", settlement: "Katherine", hasPhoto: false, photos: [], biography: "Shop owner from Palermo." },
+    { id: 1536, firstName: "Bradden", lastName: "Bellette", fullName: "Bradden Arthur Bellette", birthYear: 1940, birthPlace: "Venice", occupation: "Fireman", arrivalYear: 1975, region: "Veneto", settlement: "Darwin", hasPhoto: false, photos: [], biography: "Fireman from Venice." },
+    { id: 1792, firstName: "Margaret", lastName: "Zerna", fullName: "Margaret Ann Zerna", birthYear: 1935, birthPlace: "Florence", occupation: "Teacher", arrivalYear: 1975, region: "Tuscany", settlement: "Alice Springs", hasPhoto: false, photos: [], biography: "Teacher from Florence." },
+    { id: 2048, firstName: "Rosita", lastName: "Cigobia", fullName: "Rosita Delores Cigobia", birthYear: 1945, birthPlace: "Bologna", occupation: "Public Servant", arrivalYear: 1975, region: "Emilia-Romagna", settlement: "Katherine", hasPhoto: false, photos: [], biography: "Public servant from Bologna." },
+    { id: 2304, firstName: "Violet", lastName: "Del Baldori", fullName: "Violet Lillian Del Baldori", birthYear: 1950, birthPlace: "Genoa", occupation: "", arrivalYear: 1975, region: "Liguria", settlement: "Darwin", hasPhoto: false, photos: [], biography: "From Genoa, Liguria." },
   ]);
 
   const filteredMigrants = migrants.filter(migrant => {
@@ -161,7 +160,7 @@ const AdminMigrants = () => {
                         <TableCell className="text-slate-300">
                           {migrant.birthYear ? formatDate(27, 5, migrant.birthYear) : '-'}
                         </TableCell>
-                        <TableCell className="text-slate-300">{migrant.birthPlace || 'dansd'}</TableCell>
+                        <TableCell className="text-slate-300">{migrant.birthPlace || 'Unknown'}</TableCell>
                         <TableCell className="text-slate-300">{migrant.occupation || '-'}</TableCell>
                         <TableCell className="text-slate-300">
                           {migrant.arrivalYear ? formatDate(24, 12, migrant.arrivalYear) : '-'}
