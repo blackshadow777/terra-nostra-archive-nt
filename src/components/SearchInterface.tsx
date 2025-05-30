@@ -5,13 +5,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Search, Filter } from "lucide-react";
+import { SearchFilters } from "@/types";
 
 interface SearchInterfaceProps {
-  onSearch: (searchData: any) => void;
+  onSearch: (searchData: SearchFilters) => void;
 }
 
 const SearchInterface = ({ onSearch }: SearchInterfaceProps) => {
-  const [searchForm, setSearchForm] = useState({
+  const [searchForm, setSearchForm] = useState<SearchFilters>({
     firstName: "",
     lastName: "",
     yearFrom: "",
@@ -20,7 +21,7 @@ const SearchInterface = ({ onSearch }: SearchInterfaceProps) => {
     settlement: ""
   });
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field: keyof SearchFilters, value: string) => {
     setSearchForm(prev => ({ ...prev, [field]: value }));
   };
 

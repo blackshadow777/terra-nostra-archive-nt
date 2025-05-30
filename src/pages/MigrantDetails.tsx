@@ -1,178 +1,49 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Calendar, MapPin, User, Users, FileText } from "lucide-react";
+import { ArrowLeft, Calendar, MapPin, User, Users, FileText, Loader2 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-
-// Extended mock detailed data
-const mockMigrantData: Record<string, any> = {
-  "1": {
-    id: 1,
-    fullName: "Giuseppe Rossi",
-    firstName: "Giuseppe",
-    lastName: "Rossi",
-    birthYear: 1925,
-    birthPlace: "Venice, Veneto, Italy",
-    deathYear: 1995,
-    arrivalYear: 1951,
-    region: "Veneto",
-    settlement: "Darwin",
-    occupation: "Construction Worker",
-    mainPhoto: "https://images.unsplash.com/photo-1482938289607-e9573fc25ebb",
-    photos: [
-      "https://images.unsplash.com/photo-1482938289607-e9573fc25ebb",
-      "https://images.unsplash.com/photo-1649972904349-6e44c42644a7",
-      "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158"
-    ],
-    biography: "Giuseppe Rossi arrived in Darwin in 1951 as part of the post-war migration wave. He worked on major construction projects including the rebuilding of Darwin after Cyclone Tracy.",
-    family: {
-      parents: "Antonio Rossi, Maria Venetian",
-      children: "Carlo Rossi, Anna Rossi-Smith"
-    },
-    naturalization: {
-      date: "1956-03-15",
-      certificate: "NAT-1956-0234",
-      issuedAt: "Darwin"
-    },
-    residence: {
-      townOrCity: "Darwin",
-      homeAtDeath: "15 Cavenagh Street, Darwin"
-    }
-  },
-  "2": {
-    id: 2,
-    fullName: "Maria Benedetti",
-    firstName: "Maria",
-    lastName: "Benedetti",
-    birthYear: 1930,
-    birthPlace: "Palermo, Sicily, Italy",
-    deathYear: 1998,
-    arrivalYear: 1955,
-    region: "Sicily",
-    settlement: "Katherine",
-    occupation: "Seamstress",
-    mainPhoto: "https://images.unsplash.com/photo-1544005313-94ddf0286df2",
-    photos: [
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2"
-    ],
-    biography: "Maria Benedetti was a skilled seamstress who opened Katherine's first tailoring shop, serving the growing Italian community.",
-    family: {
-      parents: "Francesco Benedetti, Rosa Sicilian",
-      children: "Giuseppe Benedetti Jr., Elena Benedetti-White"
-    },
-    naturalization: {
-      date: "1960-08-12",
-      certificate: "NAT-1960-0567",
-      issuedAt: "Katherine"
-    },
-    residence: {
-      townOrCity: "Katherine",
-      homeAtDeath: "23 Main Street, Katherine"
-    }
-  },
-  "3": {
-    id: 3,
-    fullName: "Antonio Lombardi",
-    firstName: "Antonio",
-    lastName: "Lombardi",
-    birthYear: 1928,
-    birthPlace: "Cosenza, Calabria, Italy",
-    deathYear: 1992,
-    arrivalYear: 1950,
-    region: "Calabria",
-    settlement: "Tennant Creek",
-    occupation: "Mining Engineer",
-    mainPhoto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
-    photos: [
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e"
-    ],
-    biography: "Antonio Lombardi was instrumental in developing mining operations in Tennant Creek, bringing European engineering expertise to the region.",
-    family: {
-      parents: "Michele Lombardi, Anna Calabrese",
-      children: "Franco Lombardi, Lucia Lombardi-Green"
-    },
-    naturalization: {
-      date: "1955-11-20",
-      certificate: "NAT-1955-0123",
-      issuedAt: "Tennant Creek"
-    },
-    residence: {
-      townOrCity: "Tennant Creek",
-      homeAtDeath: "7 Mining Avenue, Tennant Creek"
-    }
-  },
-  "4": {
-    id: 4,
-    fullName: "Elena Martini",
-    firstName: "Elena",
-    lastName: "Martini",
-    birthYear: 1932,
-    birthPlace: "Florence, Tuscany, Italy",
-    deathYear: 2001,
-    arrivalYear: 1958,
-    region: "Tuscany",
-    settlement: "Alice Springs",
-    occupation: "Teacher",
-    mainPhoto: "https://images.unsplash.com/photo-1494790108755-2616b612b5bc",
-    photos: [
-      "https://images.unsplash.com/photo-1494790108755-2616b612b5bc"
-    ],
-    biography: "Elena Martini established the first Italian language classes in Alice Springs and was a beloved educator for over 30 years.",
-    family: {
-      parents: "Giuseppe Martini, Francesca Tuscan",
-      children: "Marco Martini, Sofia Martini-Brown"
-    },
-    naturalization: {
-      date: "1963-04-18",
-      certificate: "NAT-1963-0789",
-      issuedAt: "Alice Springs"
-    },
-    residence: {
-      townOrCity: "Alice Springs",
-      homeAtDeath: "42 School Road, Alice Springs"
-    }
-  },
-  "5": {
-    id: 5,
-    fullName: "Giuseppe Benedetti",
-    firstName: "Giuseppe",
-    lastName: "Benedetti",
-    birthYear: 1920,
-    birthPlace: "Catania, Sicily, Italy",
-    deathYear: 1988,
-    arrivalYear: 1948,
-    region: "Sicily",
-    settlement: "Darwin",
-    occupation: "Fisherman",
-    mainPhoto: "https://images.unsplash.com/photo-1566492031773-4f4e44671d66",
-    photos: [
-      "https://images.unsplash.com/photo-1566492031773-4f4e44671d66"
-    ],
-    biography: "Giuseppe Benedetti pioneered modern fishing techniques in Darwin's waters and established the city's first fish market.",
-    family: {
-      parents: "Salvatore Benedetti, Carmela Sicilian",
-      children: "Antonio Benedetti, Rosa Benedetti-Jones"
-    },
-    naturalization: {
-      date: "1953-07-10",
-      certificate: "NAT-1953-0045",
-      issuedAt: "Darwin"
-    },
-    residence: {
-      townOrCity: "Darwin",
-      homeAtDeath: "8 Fisherman's Wharf, Darwin"
-    }
-  }
-};
+import { Migrant } from "@/types";
+import { ApiService } from "@/services/apiService";
 
 const MigrantDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [migrant, setMigrant] = useState<Migrant | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   
-  const migrant = id ? mockMigrantData[id] : null;
+  useEffect(() => {
+    const loadMigrant = async () => {
+      if (!id) return;
+      
+      try {
+        const data = await ApiService.getMigrantById(parseInt(id));
+        setMigrant(data);
+      } catch (error) {
+        console.error('Failed to load migrant:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadMigrant();
+  }, [id]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Header />
+        <div className="container mx-auto px-4 py-16 text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-terra-red" />
+          <p className="text-terra-navy/70">Loading migrant details...</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
   
   if (!migrant) {
     return (
@@ -209,11 +80,17 @@ const MigrantDetails = () => {
               <Card>
                 <CardContent className="p-0">
                   <div className="aspect-[3/4] bg-gradient-to-br from-terra-beige to-terra-beige/50 overflow-hidden rounded-t-lg">
-                    <img 
-                      src={migrant.mainPhoto} 
-                      alt={migrant.fullName}
-                      className="w-full h-full object-cover"
-                    />
+                    {migrant.mainPhoto ? (
+                      <img 
+                        src={migrant.mainPhoto} 
+                        alt={migrant.fullName}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <User className="w-16 h-16 text-terra-beige/60" />
+                      </div>
+                    )}
                   </div>
                   
                   {migrant.photos.length > 1 && (

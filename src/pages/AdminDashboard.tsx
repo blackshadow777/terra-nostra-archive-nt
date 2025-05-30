@@ -3,8 +3,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { 
   Users, 
   FileText, 
@@ -12,13 +12,14 @@ import {
   Settings, 
   LogOut, 
   Camera,
-  Edit,
-  Trash2,
   Search,
   TrendingUp
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import AdminTable from "@/components/AdminTable";
+import { useAdmin } from "@/hooks/useAdmin";
+import { useAnalytics } from "@/hooks/useAnalytics";
+import AdminForm from "@/components/admin/AdminForm";
+import AnalyticsChart from "@/components/analytics/AnalyticsChart";
 
 const AdminDashboard = () => {
   const [adminProfile, setAdminProfile] = useState({
@@ -27,15 +28,19 @@ const AdminDashboard = () => {
     profilePicture: ""
   });
   const [activeView, setActiveView] = useState<"dashboard" | "management">("dashboard");
+  const [isAddingAdmin, setIsAddingAdmin] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { admins, loadAdmins, createAdmin } = useAdmin();
+  const { data: analytics, isLoading: analyticsLoading } = useAnalytics();
 
   useEffect(() => {
     const token = localStorage.getItem("adminToken");
     if (!token) {
       navigate("/admin/login");
     }
-  }, [navigate]);
+    loadAdmins();
+  }, [navigate, loadAdmins]);
 
   const handleLogout = () => {
     localStorage.removeItem("adminToken");
@@ -64,19 +69,21 @@ const AdminDashboard = () => {
     }
   };
 
-  const stats = [
-    { title: "Total Migrants", value: "1,247", icon: Users, color: "text-terra-red", trend: "+12%" },
-    { title: "Records Added", value: "23", icon: FileText, color: "text-terra-green", trend: "+5%" },
-    { title: "This Month", value: "156", icon: Calendar, color: "text-terra-yellow", trend: "+18%" },
-    { title: "Active Admins", value: "8", icon: Settings, color: "text-terra-navy", trend: "+2%" }
-  ];
+  const handleCreateAdmin = async (adminData: any) => {
+    try {
+      await createAdmin(adminData);
+      setIsAddingAdmin(false);
+    } catch (error) {
+      // Error handling is done in the hook
+    }
+  };
 
-  const recentMigrants = [
-    { id: 1, name: "Giuseppe Rossi", region: "Veneto", date: "2024-01-15" },
-    { id: 2, name: "Maria Benedetti", region: "Sicily", date: "2024-01-14" },
-    { id: 3, name: "Antonio Lombardi", region: "Calabria", date: "2024-01-13" },
-    { id: 4, name: "Elena Martini", region: "Tuscany", date: "2024-01-12" }
-  ];
+  const stats = analytics ? [
+    { title: "Total Migrants", value: analytics.totalMigrants.toString(), icon: Users, color: "text-terra-red", trend: "+12%" },
+    { title: "Records Added", value: analytics.recordsAdded.toString(), icon: FileText, color: "text-terra-green", trend: "+5%" },
+    { title: "This Month", value: analytics.recordsThisMonth.toString(), icon: Calendar, color: "text-terra-yellow", trend: "+18%" },
+    { title: "Active Admins", value: analytics.totalAdmins.toString(), icon: Settings, color: "text-terra-navy", trend: "+2%" }
+  ] : [];
 
   return (
     <div className="min-h-screen bg-terra-beige/10">
@@ -147,7 +154,7 @@ const AdminDashboard = () => {
           </Button>
         </div>
 
-        {activeView === "dashboard" && (
+        {activeView === "dashboard" && !analyticsLoading && analytics && (
           <>
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               {stats.map((stat, index) => (
@@ -169,80 +176,72 @@ const AdminDashboard = () => {
               ))}
             </div>
 
-            <div className="grid lg:grid-cols-3 gap-8">
-              <Card className="lg:col-span-1">
-                <CardHeader>
-                  <CardTitle className="text-terra-navy">Quick Actions</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <Button 
-                    onClick={() => setActiveView("management")}
-                    className="w-full bg-terra-red hover:bg-terra-red/90 text-white justify-start"
-                  >
-                    <FileText className="w-4 h-4 mr-2" />
-                    Manage Records
-                  </Button>
-                  <Button 
-                    onClick={() => navigate("/")}
-                    variant="outline" 
-                    className="w-full border-terra-green text-terra-green hover:bg-terra-green hover:text-white justify-start"
-                  >
-                    <Search className="w-4 h-4 mr-2" />
-                    View Public Site
-                  </Button>
-                  <Button 
-                    onClick={() => setActiveView("management")}
-                    variant="outline" 
-                    className="w-full border-terra-navy text-terra-navy hover:bg-terra-navy hover:text-white justify-start"
-                  >
-                    <Settings className="w-4 h-4 mr-2" />
-                    Admin Settings
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card className="lg:col-span-2">
-                <CardHeader>
-                  <CardTitle className="text-terra-navy">Recent Records</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {recentMigrants.map((migrant) => (
-                      <div key={migrant.id} className="flex items-center justify-between border-b border-terra-beige pb-3">
-                        <div className="flex items-center gap-3">
-                          <Avatar>
-                            <AvatarFallback className="bg-terra-beige text-terra-navy">
-                              {migrant.name.charAt(0)}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <p className="font-medium text-terra-navy">{migrant.name}</p>
-                            <div className="flex items-center gap-2">
-                              <Badge variant="outline" className="border-terra-green text-terra-green text-xs">
-                                {migrant.region}
-                              </Badge>
-                              <span className="text-xs text-terra-navy/60">Added: {migrant.date}</span>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button size="sm" variant="ghost" className="text-terra-navy hover:text-terra-green">
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          <Button size="sm" variant="ghost" className="text-terra-navy hover:text-terra-red">
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+            <div className="grid lg:grid-cols-2 gap-6 mb-8">
+              <AnalyticsChart
+                title="Migrants by Region"
+                data={analytics.migrantsByRegion}
+                type="pie"
+              />
+              <AnalyticsChart
+                title="Migrants by Settlement"
+                data={analytics.migrantsBySettlement}
+                type="bar"
+              />
             </div>
+
+            <AnalyticsChart
+              title="Arrivals by Decade"
+              data={analytics.migrantsByYear}
+              type="bar"
+              dataKey="count"
+              nameKey="year"
+            />
           </>
         )}
 
-        {activeView === "management" && <AdminTable />}
+        {activeView === "management" && (
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-terra-navy">Admin Management</CardTitle>
+              <Dialog open={isAddingAdmin} onOpenChange={setIsAddingAdmin}>
+                <DialogTrigger asChild>
+                  <Button className="bg-terra-green hover:bg-terra-green/90 text-white">
+                    Add Admin
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Add New Admin</DialogTitle>
+                  </DialogHeader>
+                  <AdminForm
+                    onSubmit={handleCreateAdmin}
+                    onCancel={() => setIsAddingAdmin(false)}
+                  />
+                </DialogContent>
+              </Dialog>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {admins.map((admin) => (
+                  <div key={admin.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div>
+                      <h4 className="font-medium text-terra-navy">{admin.name}</h4>
+                      <p className="text-sm text-terra-navy/70">{admin.email}</p>
+                      <p className="text-xs text-terra-navy/50">Role: {admin.role}</p>
+                    </div>
+                    <div className="text-right">
+                      <span className={`inline-block px-2 py-1 rounded text-xs ${
+                        admin.status === 'Active' ? 'bg-terra-green text-white' : 'bg-terra-yellow text-white'
+                      }`}>
+                        {admin.status}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </main>
     </div>
   );
