@@ -1,4 +1,3 @@
-
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,7 +6,7 @@ import { ArrowLeft, Calendar, MapPin, User, Users, FileText } from "lucide-react
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
-// Mock detailed data
+// Extended mock detailed data
 const mockMigrantData: Record<string, any> = {
   "1": {
     id: 1,
@@ -41,6 +40,131 @@ const mockMigrantData: Record<string, any> = {
       townOrCity: "Darwin",
       homeAtDeath: "15 Cavenagh Street, Darwin"
     }
+  },
+  "2": {
+    id: 2,
+    fullName: "Maria Benedetti",
+    firstName: "Maria",
+    lastName: "Benedetti",
+    birthYear: 1930,
+    birthPlace: "Palermo, Sicily, Italy",
+    deathYear: 1998,
+    arrivalYear: 1955,
+    region: "Sicily",
+    settlement: "Katherine",
+    occupation: "Seamstress",
+    mainPhoto: "https://images.unsplash.com/photo-1544005313-94ddf0286df2",
+    photos: [
+      "https://images.unsplash.com/photo-1544005313-94ddf0286df2"
+    ],
+    biography: "Maria Benedetti was a skilled seamstress who opened Katherine's first tailoring shop, serving the growing Italian community.",
+    family: {
+      parents: "Francesco Benedetti, Rosa Sicilian",
+      children: "Giuseppe Benedetti Jr., Elena Benedetti-White"
+    },
+    naturalization: {
+      date: "1960-08-12",
+      certificate: "NAT-1960-0567",
+      issuedAt: "Katherine"
+    },
+    residence: {
+      townOrCity: "Katherine",
+      homeAtDeath: "23 Main Street, Katherine"
+    }
+  },
+  "3": {
+    id: 3,
+    fullName: "Antonio Lombardi",
+    firstName: "Antonio",
+    lastName: "Lombardi",
+    birthYear: 1928,
+    birthPlace: "Cosenza, Calabria, Italy",
+    deathYear: 1992,
+    arrivalYear: 1950,
+    region: "Calabria",
+    settlement: "Tennant Creek",
+    occupation: "Mining Engineer",
+    mainPhoto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
+    photos: [
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
+      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e"
+    ],
+    biography: "Antonio Lombardi was instrumental in developing mining operations in Tennant Creek, bringing European engineering expertise to the region.",
+    family: {
+      parents: "Michele Lombardi, Anna Calabrese",
+      children: "Franco Lombardi, Lucia Lombardi-Green"
+    },
+    naturalization: {
+      date: "1955-11-20",
+      certificate: "NAT-1955-0123",
+      issuedAt: "Tennant Creek"
+    },
+    residence: {
+      townOrCity: "Tennant Creek",
+      homeAtDeath: "7 Mining Avenue, Tennant Creek"
+    }
+  },
+  "4": {
+    id: 4,
+    fullName: "Elena Martini",
+    firstName: "Elena",
+    lastName: "Martini",
+    birthYear: 1932,
+    birthPlace: "Florence, Tuscany, Italy",
+    deathYear: 2001,
+    arrivalYear: 1958,
+    region: "Tuscany",
+    settlement: "Alice Springs",
+    occupation: "Teacher",
+    mainPhoto: "https://images.unsplash.com/photo-1494790108755-2616b612b5bc",
+    photos: [
+      "https://images.unsplash.com/photo-1494790108755-2616b612b5bc"
+    ],
+    biography: "Elena Martini established the first Italian language classes in Alice Springs and was a beloved educator for over 30 years.",
+    family: {
+      parents: "Giuseppe Martini, Francesca Tuscan",
+      children: "Marco Martini, Sofia Martini-Brown"
+    },
+    naturalization: {
+      date: "1963-04-18",
+      certificate: "NAT-1963-0789",
+      issuedAt: "Alice Springs"
+    },
+    residence: {
+      townOrCity: "Alice Springs",
+      homeAtDeath: "42 School Road, Alice Springs"
+    }
+  },
+  "5": {
+    id: 5,
+    fullName: "Giuseppe Benedetti",
+    firstName: "Giuseppe",
+    lastName: "Benedetti",
+    birthYear: 1920,
+    birthPlace: "Catania, Sicily, Italy",
+    deathYear: 1988,
+    arrivalYear: 1948,
+    region: "Sicily",
+    settlement: "Darwin",
+    occupation: "Fisherman",
+    mainPhoto: "https://images.unsplash.com/photo-1566492031773-4f4e44671d66",
+    photos: [
+      "https://images.unsplash.com/photo-1566492031773-4f4e44671d66"
+    ],
+    biography: "Giuseppe Benedetti pioneered modern fishing techniques in Darwin's waters and established the city's first fish market.",
+    family: {
+      parents: "Salvatore Benedetti, Carmela Sicilian",
+      children: "Antonio Benedetti, Rosa Benedetti-Jones"
+    },
+    naturalization: {
+      date: "1953-07-10",
+      certificate: "NAT-1953-0045",
+      issuedAt: "Darwin"
+    },
+    residence: {
+      townOrCity: "Darwin",
+      homeAtDeath: "8 Fisherman's Wharf, Darwin"
+    }
   }
 };
 
@@ -71,7 +195,6 @@ const MigrantDetails = () => {
       <Header />
       <main className="py-8">
         <div className="container mx-auto px-4">
-          {/* Back Button */}
           <Button 
             onClick={() => navigate("/")} 
             variant="outline"
@@ -82,7 +205,6 @@ const MigrantDetails = () => {
           </Button>
 
           <div className="grid lg:grid-cols-3 gap-8">
-            {/* Main Photo and Gallery */}
             <div className="lg:col-span-1">
               <Card>
                 <CardContent className="p-0">
@@ -94,7 +216,6 @@ const MigrantDetails = () => {
                     />
                   </div>
                   
-                  {/* Photo Gallery */}
                   {migrant.photos.length > 1 && (
                     <div className="p-4">
                       <h4 className="font-semibold text-terra-navy mb-3">Photo Gallery</h4>
@@ -115,9 +236,7 @@ const MigrantDetails = () => {
               </Card>
             </div>
 
-            {/* Details */}
             <div className="lg:col-span-2 space-y-6">
-              {/* Header */}
               <div>
                 <h1 className="font-playfair text-3xl lg:text-4xl font-bold text-terra-navy mb-2">
                   {migrant.fullName}
@@ -137,7 +256,6 @@ const MigrantDetails = () => {
                 </div>
               </div>
 
-              {/* Basic Information */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-terra-navy">
@@ -167,7 +285,6 @@ const MigrantDetails = () => {
                 </CardContent>
               </Card>
 
-              {/* Biography */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-terra-navy">
@@ -180,7 +297,6 @@ const MigrantDetails = () => {
                 </CardContent>
               </Card>
 
-              {/* Family Information */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-terra-navy">
@@ -200,7 +316,6 @@ const MigrantDetails = () => {
                 </CardContent>
               </Card>
 
-              {/* Naturalization */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-terra-navy">

@@ -6,7 +6,11 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Search, Filter } from "lucide-react";
 
-const SearchInterface = () => {
+interface SearchInterfaceProps {
+  onSearch: (searchData: any) => void;
+}
+
+const SearchInterface = ({ onSearch }: SearchInterfaceProps) => {
   const [searchForm, setSearchForm] = useState({
     firstName: "",
     lastName: "",
@@ -22,7 +26,7 @@ const SearchInterface = () => {
 
   const handleSearch = () => {
     console.log("Searching with:", searchForm);
-    // Search functionality will be implemented later
+    onSearch(searchForm);
   };
 
   return (

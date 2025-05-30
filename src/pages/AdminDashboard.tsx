@@ -5,8 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { 
   Users, 
   FileText, 
@@ -16,9 +14,11 @@ import {
   Camera,
   Edit,
   Trash2,
-  Search
+  Search,
+  TrendingUp
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import AdminTable from "@/components/AdminTable";
 
 const AdminDashboard = () => {
   const [adminProfile, setAdminProfile] = useState({
@@ -26,11 +26,11 @@ const AdminDashboard = () => {
     email: "admin@example.com",
     profilePicture: ""
   });
+  const [activeView, setActiveView] = useState<"dashboard" | "management">("dashboard");
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check if user is authenticated
     const token = localStorage.getItem("adminToken");
     if (!token) {
       navigate("/admin/login");
@@ -64,12 +64,11 @@ const AdminDashboard = () => {
     }
   };
 
-  // Mock data for the dashboard
   const stats = [
-    { title: "Total Migrants", value: "1,247", icon: Users, color: "text-terra-red" },
-    { title: "Records Added", value: "23", icon: FileText, color: "text-terra-green" },
-    { title: "This Month", value: "156", icon: Calendar, color: "text-terra-yellow" },
-    { title: "Pending Review", value: "8", icon: Settings, color: "text-terra-navy" }
+    { title: "Total Migrants", value: "1,247", icon: Users, color: "text-terra-red", trend: "+12%" },
+    { title: "Records Added", value: "23", icon: FileText, color: "text-terra-green", trend: "+5%" },
+    { title: "This Month", value: "156", icon: Calendar, color: "text-terra-yellow", trend: "+18%" },
+    { title: "Active Admins", value: "8", icon: Settings, color: "text-terra-navy", trend: "+2%" }
   ];
 
   const recentMigrants = [
@@ -81,7 +80,6 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-terra-beige/10">
-      {/* Header */}
       <header className="bg-white shadow-sm border-b border-terra-beige/20">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -93,7 +91,6 @@ const AdminDashboard = () => {
             </div>
             
             <div className="flex items-center gap-4">
-              {/* Profile Section */}
               <div className="flex items-center gap-3">
                 <div className="relative">
                   <Avatar className="w-10 h-10">
@@ -133,84 +130,119 @@ const AdminDashboard = () => {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        {/* Stats Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {stats.map((stat, index) => (
-            <Card key={index}>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-terra-navy/70">{stat.title}</p>
-                    <p className="text-2xl font-bold text-terra-navy">{stat.value}</p>
-                  </div>
-                  <stat.icon className={`w-8 h-8 ${stat.color}`} />
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="flex gap-4 mb-8">
+          <Button
+            variant={activeView === "dashboard" ? "default" : "outline"}
+            onClick={() => setActiveView("dashboard")}
+            className={activeView === "dashboard" ? "bg-terra-red text-white" : "border-terra-navy text-terra-navy"}
+          >
+            Dashboard
+          </Button>
+          <Button
+            variant={activeView === "management" ? "default" : "outline"}
+            onClick={() => setActiveView("management")}
+            className={activeView === "management" ? "bg-terra-red text-white" : "border-terra-navy text-terra-navy"}
+          >
+            Management
+          </Button>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Quick Actions */}
-          <Card className="lg:col-span-1">
-            <CardHeader>
-              <CardTitle className="text-terra-navy">Quick Actions</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Button className="w-full bg-terra-red hover:bg-terra-red/90 text-white justify-start">
-                <FileText className="w-4 h-4 mr-2" />
-                Add New Migrant
-              </Button>
-              <Button variant="outline" className="w-full border-terra-green text-terra-green hover:bg-terra-green hover:text-white justify-start">
-                <Search className="w-4 h-4 mr-2" />
-                Search Records
-              </Button>
-              <Button variant="outline" className="w-full border-terra-navy text-terra-navy hover:bg-terra-navy hover:text-white justify-start">
-                <Settings className="w-4 h-4 mr-2" />
-                System Settings
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Recent Records */}
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle className="text-terra-navy">Recent Records</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {recentMigrants.map((migrant)=> (
-                  <div key={migrant.id} className="flex items-center justify-between border-b border-terra-beige pb-3">
-                    <div className="flex items-center gap-3">
-                      <Avatar>
-                        <AvatarFallback className="bg-terra-beige text-terra-navy">
-                          {migrant.name.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
+        {activeView === "dashboard" && (
+          <>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              {stats.map((stat, index) => (
+                <Card key={index}>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
                       <div>
-                        <p className="font-medium text-terra-navy">{migrant.name}</p>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="border-terra-green text-terra-green text-xs">
-                            {migrant.region}
-                          </Badge>
-                          <span className="text-xs text-terra-navy/60">Added: {migrant.date}</span>
+                        <p className="text-sm font-medium text-terra-navy/70">{stat.title}</p>
+                        <p className="text-2xl font-bold text-terra-navy">{stat.value}</p>
+                        <div className="flex items-center gap-1 mt-2">
+                          <TrendingUp className="w-3 h-3 text-terra-green" />
+                          <span className="text-xs text-terra-green font-medium">{stat.trend}</span>
                         </div>
                       </div>
+                      <stat.icon className={`w-8 h-8 ${stat.color}`} />
                     </div>
-                    <div className="flex gap-2">
-                      <Button size="sm" variant="ghost" className="text-terra-navy hover:text-terra-green">
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button size="sm" variant="ghost" className="text-terra-navy hover:text-terra-red">
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            <div className="grid lg:grid-cols-3 gap-8">
+              <Card className="lg:col-span-1">
+                <CardHeader>
+                  <CardTitle className="text-terra-navy">Quick Actions</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <Button 
+                    onClick={() => setActiveView("management")}
+                    className="w-full bg-terra-red hover:bg-terra-red/90 text-white justify-start"
+                  >
+                    <FileText className="w-4 h-4 mr-2" />
+                    Manage Records
+                  </Button>
+                  <Button 
+                    onClick={() => navigate("/")}
+                    variant="outline" 
+                    className="w-full border-terra-green text-terra-green hover:bg-terra-green hover:text-white justify-start"
+                  >
+                    <Search className="w-4 h-4 mr-2" />
+                    View Public Site
+                  </Button>
+                  <Button 
+                    onClick={() => setActiveView("management")}
+                    variant="outline" 
+                    className="w-full border-terra-navy text-terra-navy hover:bg-terra-navy hover:text-white justify-start"
+                  >
+                    <Settings className="w-4 h-4 mr-2" />
+                    Admin Settings
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="lg:col-span-2">
+                <CardHeader>
+                  <CardTitle className="text-terra-navy">Recent Records</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {recentMigrants.map((migrant) => (
+                      <div key={migrant.id} className="flex items-center justify-between border-b border-terra-beige pb-3">
+                        <div className="flex items-center gap-3">
+                          <Avatar>
+                            <AvatarFallback className="bg-terra-beige text-terra-navy">
+                              {migrant.name.charAt(0)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-medium text-terra-navy">{migrant.name}</p>
+                            <div className="flex items-center gap-2">
+                              <Badge variant="outline" className="border-terra-green text-terra-green text-xs">
+                                {migrant.region}
+                              </Badge>
+                              <span className="text-xs text-terra-navy/60">Added: {migrant.date}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button size="sm" variant="ghost" className="text-terra-navy hover:text-terra-green">
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button size="sm" variant="ghost" className="text-terra-navy hover:text-terra-red">
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+                </CardContent>
+              </Card>
+            </div>
+          </>
+        )}
+
+        {activeView === "management" && <AdminTable />}
       </main>
     </div>
   );
