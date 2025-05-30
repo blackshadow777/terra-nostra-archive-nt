@@ -1,6 +1,7 @@
 
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   return (
@@ -8,9 +9,11 @@ const Header = () => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <h1 className="font-playfair text-2xl lg:text-3xl font-bold text-terra-red">
-              Terra Nostra Archive
-            </h1>
+            <Link to="/">
+              <h1 className="font-playfair text-2xl lg:text-3xl font-bold text-terra-red">
+                Terra Nostra Archive
+              </h1>
+            </Link>
             <div className="hidden lg:block w-px h-8 bg-terra-beige"></div>
             <p className="hidden lg:block text-terra-navy/70 font-medium">
               Italian Migration to Northern Territory
@@ -18,12 +21,12 @@ const Header = () => {
           </div>
           
           <nav className="flex items-center space-x-6">
-            <a 
-              href="#" 
+            <Link 
+              to="/" 
               className="text-terra-navy hover:text-terra-red transition-colors font-medium"
             >
               Home
-            </a>
+            </Link>
             <a 
               href="#search" 
               className="text-terra-navy hover:text-terra-red transition-colors font-medium"
@@ -36,6 +39,12 @@ const Header = () => {
             >
               About
             </a>
+            <Link 
+              to="/admin/login" 
+              className="text-terra-navy hover:text-terra-red transition-colors font-medium"
+            >
+              Admin
+            </Link>
             <Button 
               variant="outline" 
               size="sm"

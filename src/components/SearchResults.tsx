@@ -2,6 +2,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, User } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 // Mock data for demonstration
 const mockResults = [
@@ -48,6 +49,12 @@ const mockResults = [
 ];
 
 const SearchResults = () => {
+  const navigate = useNavigate();
+
+  const handleResultClick = (id: number) => {
+    navigate(`/migrant/${id}`);
+  };
+
   return (
     <section className="py-16 bg-terra-beige/10">
       <div className="container mx-auto px-4">
@@ -64,7 +71,8 @@ const SearchResults = () => {
           {mockResults.map((person) => (
             <Card 
               key={person.id}
-              className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-terra-beige/30 hover:border-terra-red/30"
+              onClick={() => handleResultClick(person.id)}
+              className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-terra-beige/30 hover:border-terra-red/30 hover:scale-105"
             >
               <CardContent className="p-0">
                 {/* Photo Section */}
@@ -78,15 +86,6 @@ const SearchResults = () => {
                       <User className="w-16 h-16 text-terra-beige/60" />
                     </div>
                   )}
-                  
-                  <div className="absolute top-3 right-3">
-                    <Badge 
-                      variant="secondary" 
-                      className="bg-white/90 text-terra-navy text-xs"
-                    >
-                      ID: {person.id}
-                    </Badge>
-                  </div>
                 </div>
 
                 {/* Info Section */}
