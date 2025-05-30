@@ -8,8 +8,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 // Mock detailed data
-const mockMigrantData = {
-  1: {
+const mockMigrantData: Record<string, any> = {
+  "1": {
     id: 1,
     fullName: "Giuseppe Rossi",
     firstName: "Giuseppe",
@@ -48,7 +48,7 @@ const MigrantDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   
-  const migrant = mockMigrantData[id as keyof typeof mockMigrantData];
+  const migrant = id ? mockMigrantData[id] : null;
   
   if (!migrant) {
     return (
@@ -99,7 +99,7 @@ const MigrantDetails = () => {
                     <div className="p-4">
                       <h4 className="font-semibold text-terra-navy mb-3">Photo Gallery</h4>
                       <div className="grid grid-cols-3 gap-2">
-                        {migrant.photos.slice(1).map((photo, index) => (
+                        {migrant.photos.slice(1).map((photo: string, index: number) => (
                           <div key={index} className="aspect-square bg-terra-beige/30 rounded overflow-hidden">
                             <img 
                               src={photo} 
