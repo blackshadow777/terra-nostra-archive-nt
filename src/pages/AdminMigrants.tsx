@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,97 +8,112 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Search, Plus, Edit, Trash2, Filter } from "lucide-react";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import DashboardHeader from "@/components/admin/DashboardHeader";
-import { Migrant } from "@/types";
+import { Person } from "@/types";
 
 const AdminMigrants = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  // Mock data with proper Migrant interface
-  const mockMigrants: Migrant[] = [
+  // Mock data with proper Person interface
+  const mockMigrants: Person[] = [
     {
-      id: 1,
-      firstName: "Giuseppe",
-      lastName: "Rossi",
+      person_id: 1,
+      christian_name: "Giuseppe",
+      surname: "Rossi",
       fullName: "Giuseppe Rossi",
-      birthYear: 1925,
-      birthPlace: "Venice, Italy",
+      date_of_birth: 1925,
+      place_of_birth: "Venice, Italy",
       occupation: "Construction Worker",
-      arrivalYear: 1951,
-      region: "Veneto",
-      settlement: "Darwin",
-      hasPhoto: false,
+      additional_notes: "Giuseppe Rossi arrived in Darwin in 1951 as part of the post-war migration wave.",
+      reference: "REF-001",
+      id_card_no: "ID-1951-001",
+      has_photo: false,
       photos: [],
-      biography: "Giuseppe Rossi arrived in Darwin in 1951 as part of the post-war migration wave.",
       family: {
-        parents: "Antonio Rossi, Maria Venetian",
-        children: "Carlo Rossi, Anna Rossi-Smith"
+        names_of_parents: "Antonio Rossi, Maria Venetian",
+        names_of_children: "Carlo Rossi, Anna Rossi-Smith"
       },
       naturalization: {
-        date: "1956-03-15",
-        certificate: "NAT-1956-0234",
-        issuedAt: "Darwin"
+        date_of_naturalisation: "1956-03-15",
+        no_of_cert: "NAT-1956-0234",
+        issued_at: "Darwin"
       },
       residence: {
-        townOrCity: "Darwin",
-        homeAtDeath: "15 Cavenagh Street, Darwin"
+        town_or_city: "Darwin",
+        home_at_death: "15 Cavenagh Street, Darwin"
+      },
+      migration: {
+        date_of_arrival_aus: "1951-03-10",
+        date_of_arrival_nt: "1951-03-15",
+        arrival_period: "Post-War",
+        data_source: "National Archives"
       }
     },
     {
-      id: 2,
-      firstName: "Maria",
-      lastName: "Martinez",
+      person_id: 2,
+      christian_name: "Maria",
+      surname: "Martinez",
       fullName: "Maria Martinez",
-      birthYear: 1928,
-      birthPlace: "Naples, Italy",
+      date_of_birth: 1928,
+      place_of_birth: "Naples, Italy",
       occupation: "Teacher",
-      arrivalYear: 1953,
-      region: "Campania",
-      settlement: "Katherine",
-      hasPhoto: false,
+      additional_notes: "Maria Martinez was a dedicated educator in Katherine.",
+      reference: "REF-002",
+      id_card_no: "ID-1953-002",
+      has_photo: false,
       photos: [],
-      biography: "Maria Martinez was a dedicated educator in Katherine.",
       family: {
-        parents: "Luigi Martinez, Rosa Napolitano",
-        children: "Marco Martinez, Sofia Martinez"
+        names_of_parents: "Luigi Martinez, Rosa Napolitano",
+        names_of_children: "Marco Martinez, Sofia Martinez"
       },
       naturalization: {
-        date: "1958-07-20",
-        certificate: "NAT-1958-0445",
-        issuedAt: "Katherine"
+        date_of_naturalisation: "1958-07-20",
+        no_of_cert: "NAT-1958-0445",
+        issued_at: "Katherine"
       },
       residence: {
-        townOrCity: "Katherine",
-        homeAtDeath: "12 Baker Street, Katherine"
+        town_or_city: "Katherine",
+        home_at_death: "12 Baker Street, Katherine"
+      },
+      migration: {
+        date_of_arrival_aus: "1953-05-20",
+        date_of_arrival_nt: "1953-05-25",
+        arrival_period: "Post-War",
+        data_source: "Immigration Records"
       }
     },
     {
-      id: 3,
-      firstName: "Antonio",
-      lastName: "Giuseppe",
+      person_id: 3,
+      christian_name: "Antonio",
+      surname: "Giuseppe",
       fullName: "Antonio Giuseppe",
-      birthYear: 1930,
-      birthPlace: "Rome, Italy",
+      date_of_birth: 1930,
+      place_of_birth: "Rome, Italy",
       occupation: "Engineer",
-      arrivalYear: 1955,
-      region: "Lazio",
-      settlement: "Alice Springs",
-      hasPhoto: false,
+      additional_notes: "Antonio Giuseppe worked on major infrastructure projects in Alice Springs.",
+      reference: "REF-003",
+      id_card_no: "ID-1955-003",
+      has_photo: false,
       photos: [],
-      biography: "Antonio Giuseppe worked on major infrastructure projects in Alice Springs.",
       family: {
-        parents: "Francesco Giuseppe, Elena Romano",
-        children: "Giuseppe Jr., Anna Giuseppe"
+        names_of_parents: "Francesco Giuseppe, Elena Romano",
+        names_of_children: "Giuseppe Jr., Anna Giuseppe"
       },
       naturalization: {
-        date: "1960-04-15",
-        certificate: "NAT-1960-0678",
-        issuedAt: "Alice Springs"
+        date_of_naturalisation: "1960-04-15",
+        no_of_cert: "NAT-1960-0678",
+        issued_at: "Alice Springs"
       },
       residence: {
-        townOrCity: "Alice Springs",
-        homeAtDeath: "23 School Road, Alice Springs"
+        town_or_city: "Alice Springs",
+        home_at_death: "23 School Road, Alice Springs"
+      },
+      migration: {
+        date_of_arrival_aus: "1955-08-10",
+        date_of_arrival_nt: "1955-08-15",
+        arrival_period: "Post-War",
+        data_source: "Government Records"
       }
     },
   ];
@@ -105,14 +121,14 @@ const AdminMigrants = () => {
   const filteredMigrants = mockMigrants.filter(migrant => {
     const matchesSearch = migrant.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       migrant.occupation.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      migrant.settlement.toLowerCase().includes(searchTerm.toLowerCase());
+      migrant.residence.town_or_city.toLowerCase().includes(searchTerm.toLowerCase());
     
     return matchesSearch;
   });
 
   return (
     <div className="flex h-screen bg-slate-900">
-      <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <AdminSidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
       
       <div className="flex-1 flex flex-col overflow-hidden">
         <DashboardHeader onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
@@ -158,8 +174,8 @@ const AdminMigrants = () => {
                       <TableHead className="text-slate-300">Name</TableHead>
                       <TableHead className="text-slate-300">Birth Year</TableHead>
                       <TableHead className="text-slate-300">Arrival Year</TableHead>
-                      <TableHead className="text-slate-300">Region</TableHead>
-                      <TableHead className="text-slate-300">Settlement</TableHead>
+                      <TableHead className="text-slate-300">Place of Birth</TableHead>
+                      <TableHead className="text-slate-300">Town/City</TableHead>
                       <TableHead className="text-slate-300">Occupation</TableHead>
                       <TableHead className="text-slate-300">Status</TableHead>
                       <TableHead className="text-slate-300">Actions</TableHead>
@@ -167,12 +183,12 @@ const AdminMigrants = () => {
                   </TableHeader>
                   <TableBody>
                     {filteredMigrants.map((migrant) => (
-                      <TableRow key={migrant.id} className="border-slate-700 hover:bg-slate-700/50">
+                      <TableRow key={migrant.person_id} className="border-slate-700 hover:bg-slate-700/50">
                         <TableCell className="text-white font-medium">{migrant.fullName}</TableCell>
-                        <TableCell className="text-slate-300">{migrant.birthYear}</TableCell>
-                        <TableCell className="text-slate-300">{migrant.arrivalYear}</TableCell>
-                        <TableCell className="text-slate-300">{migrant.region}</TableCell>
-                        <TableCell className="text-slate-300">{migrant.settlement}</TableCell>
+                        <TableCell className="text-slate-300">{migrant.date_of_birth}</TableCell>
+                        <TableCell className="text-slate-300">{new Date(migrant.migration.date_of_arrival_nt).getFullYear()}</TableCell>
+                        <TableCell className="text-slate-300">{migrant.place_of_birth}</TableCell>
+                        <TableCell className="text-slate-300">{migrant.residence.town_or_city}</TableCell>
                         <TableCell className="text-slate-300">{migrant.occupation}</TableCell>
                         <TableCell>
                           <Badge variant="outline" className="border-green-500 text-green-500">
