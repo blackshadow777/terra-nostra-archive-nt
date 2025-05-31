@@ -7,7 +7,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FilterOptions, SortOption } from "@/types/admin";
 import { Filter, SortAsc, SortDesc, RotateCcw } from "lucide-react";
-import { Person } from "@/types";
 
 interface MigrantFiltersProps {
   filters: Partial<FilterOptions>;
@@ -17,13 +16,15 @@ interface MigrantFiltersProps {
   onReset: () => void;
 }
 
-const sortFields: { value: keyof Person; label: string }[] = [
-  { value: 'fullName', label: 'Full Name' },
+const sortFields: { value: string; label: string }[] = [
+  { value: 'full_name', label: 'Full Name' },
   { value: 'christian_name', label: 'First Name' },
   { value: 'surname', label: 'Last Name' },
-  { value: 'date_of_birth', label: 'Birth Year' },
+  { value: 'date_of_birth', label: 'Birth Date' },
   { value: 'place_of_birth', label: 'Place of Birth' },
   { value: 'occupation', label: 'Occupation' },
+  { value: 'date_of_arrival_nt', label: 'Arrival Date' },
+  { value: 'created_at', label: 'Created Date' },
 ];
 
 export default function MigrantFilters({
@@ -41,9 +42,12 @@ export default function MigrantFilters({
 
   const handleDateRangeChange = (type: 'start' | 'end', value: string) => {
     const dateRange = filters.date_range || { start: '', end: '' };
+    const newDateRange = { ...dateRange, [type]: value };
     onFiltersChange({
       ...filters,
-      date_range: { ...dateRange, [type]: value }
+      date_range: newDateRange,
+      arrival_from: newDateRange.start,
+      arrival_to: newDateRange.end
     });
   };
 
@@ -83,8 +87,11 @@ export default function MigrantFilters({
           <div>
             <Label className="text-slate-300">Full Name</Label>
             <Input
-              value={filters.fullName || ''}
-              onChange={(e) => handleFilterChange('fullName', e.target.value)}
+              value={filters.full_name || filters.fullName || ''}
+              onChange={(e) => {
+                handleFilterChange('full_name', e.target.value);
+                handleFilterChange('fullName', e.target.value);
+              }}
               className="bg-slate-700 border-slate-600 text-white"
               placeholder="Search by full name..."
             />
@@ -95,14 +102,14 @@ export default function MigrantFilters({
             <Label className="text-slate-300">Sort by</Label>
             <Select
               value={sort.field}
-              onValueChange={(value) => onSortChange({ ...sort, field: value as keyof Person })}
+              onValueChange={(value) => onSortChange({ ...sort, field: value })}
             >
               <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-slate-700 border-slate-600">
                 {sortFields.map((field) => (
-                  <SelectItem key={String(field.value)} value={String(field.value)} className="text-white">
+                  <SelectItem key={field.value} value={field.value} className="text-white">
                     {field.label}
                   </SelectItem>
                 ))}
@@ -160,12 +167,12 @@ export default function MigrantFilters({
               </div>
 
               <div>
-                <Label className="text-slate-300">Birth Year</Label>
+                <Label className="text-slate-300">Birth Date</Label>
                 <Input
+                  type="date"
                   value={filters.date_of_birth || ''}
                   onChange={(e) => handleFilterChange('date_of_birth', e.target.value)}
                   className="bg-slate-700 border-slate-600 text-white"
-                  placeholder="e.g., 1920"
                 />
               </div>
 
@@ -199,43 +206,24 @@ export default function MigrantFilters({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label className="text-slate-300">Arrival Date Range - Start</Label>
+                <Label className="text-slate-300">Arrival Date - From</Label>
                 <Input
                   type="date"
-                  value={filters.date_range?.start || ''}
+                  value={filters.date_range?.start || filters.arrival_from || ''}
                   onChange={(e) => handleDateRangeChange('start', e.target.value)}
                   className="bg-slate-700 border-slate-600 text-white"
                 />
               </div>
               
               <div>
-                <Label className="text-slate-300">Arrival Date Range - End</Label>
+                <Label className="text-slate-300">Arrival Date - To</Label>
                 <Input
                   type="date"
-                  value={filters.date_range?.end || ''}
+                  value={filters.date_range?.end || filters.arrival_to || ''}
                   onChange={(e) => handleDateRangeChange('end', e.target.value)}
                   className="bg-slate-700 border-slate-600 text-white"
                 />
               </div>
-            </div>
-
-            <div>
-              <Label className="text-slate-300">Has Photo</Label>
-              <Select
-                value={filters.has_photo?.toString() || 'all'}
-                onValueChange={(value) => 
-                  handleFilterChange('has_photo', value === 'all' ? null : value === 'true')
-                }
-              >
-                <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-slate-700 border-slate-600">
-                  <SelectItem value="all" className="text-white">All</SelectItem>
-                  <SelectItem value="true" className="text-white">With Photos</SelectItem>
-                  <SelectItem value="false" className="text-white">Without Photos</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
           </div>
         )}

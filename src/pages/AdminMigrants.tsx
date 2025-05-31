@@ -18,7 +18,7 @@ const AdminMigrants = () => {
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState<Partial<FilterOptions>>({});
-  const [sort, setSort] = useState<SortOption>({ field: 'fullName', direction: 'asc' });
+  const [sort, setSort] = useState<SortOption>({ field: 'full_name', direction: 'asc' });
 
   const queryParams: MigrantQueryParams = {
     page: currentPage,
@@ -38,7 +38,7 @@ const AdminMigrants = () => {
 
   const handleResetFilters = () => {
     setFilters({});
-    setSort({ field: 'fullName', direction: 'asc' });
+    setSort({ field: 'full_name', direction: 'asc' });
     setCurrentPage(1);
   };
 
@@ -102,8 +102,8 @@ const AdminMigrants = () => {
                     <TableHeader>
                       <TableRow className="border-slate-700 hover:bg-slate-700/50">
                         <TableHead className="text-slate-300">Name</TableHead>
-                        <TableHead className="text-slate-300">Birth Year</TableHead>
-                        <TableHead className="text-slate-300">Arrival Year</TableHead>
+                        <TableHead className="text-slate-300">Birth Date</TableHead>
+                        <TableHead className="text-slate-300">Arrival Date</TableHead>
                         <TableHead className="text-slate-300">Place of Birth</TableHead>
                         <TableHead className="text-slate-300">Town/City</TableHead>
                         <TableHead className="text-slate-300">Occupation</TableHead>
@@ -127,13 +127,20 @@ const AdminMigrants = () => {
                       ) : (
                         migrantsData?.data.map((person: Person) => (
                           <TableRow key={person.person_id} className="border-slate-700 hover:bg-slate-700/50">
-                            <TableCell className="text-white font-medium">{person.fullName}</TableCell>
-                            <TableCell className="text-slate-300">{person.date_of_birth || 'N/A'}</TableCell>
+                            <TableCell className="text-white font-medium">
+                              {person.fullName || `${person.christian_name} ${person.surname}`}
+                            </TableCell>
                             <TableCell className="text-slate-300">
-                              {formatDate(person.migration.date_of_arrival_nt)}
+                              {person.date_of_birth ? new Date(person.date_of_birth).toLocaleDateString() : 'N/A'}
+                            </TableCell>
+                            <TableCell className="text-slate-300">
+                              {person.migration?.date_of_arrival_nt ? 
+                                new Date(person.migration.date_of_arrival_nt).toLocaleDateString() : 'N/A'}
                             </TableCell>
                             <TableCell className="text-slate-300">{person.place_of_birth || 'N/A'}</TableCell>
-                            <TableCell className="text-slate-300">{person.residence.town_or_city || 'N/A'}</TableCell>
+                            <TableCell className="text-slate-300">
+                              {person.residence?.town_or_city || 'N/A'}
+                            </TableCell>
                             <TableCell className="text-slate-300">{person.occupation || 'N/A'}</TableCell>
                             <TableCell>
                               <Badge 

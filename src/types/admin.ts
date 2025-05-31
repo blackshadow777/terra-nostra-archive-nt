@@ -2,12 +2,13 @@
 import { Person } from '@/types';
 
 export interface SortOption {
-  field: keyof Person;
+  field: string;
   direction: 'asc' | 'desc';
 }
 
 export interface FilterOptions {
   fullName: string;
+  full_name: string;
   christian_name: string;
   surname: string;
   date_of_birth: string;
@@ -20,6 +21,8 @@ export interface FilterOptions {
     start: string;
     end: string;
   };
+  arrival_from: string;
+  arrival_to: string;
 }
 
 export interface PaginationParams {

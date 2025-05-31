@@ -9,26 +9,50 @@ export class MigrantService {
     
     // Add pagination
     queryParams.append('page', params.page.toString());
-    queryParams.append('limit', params.limit.toString());
+    queryParams.append('per_page', params.limit.toString());
     
-    // Add sorting
-    queryParams.append('sort_field', String(params.sort.field));
-    queryParams.append('sort_direction', params.sort.direction);
+    // Add sorting - map to backend parameters
+    queryParams.append('sort_by', String(params.sort.field));
+    queryParams.append('sort_order', params.sort.direction);
     
-    // Add filters
+    // Add filters - map to backend parameter names
     Object.entries(params.filters).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
-        if (key === 'date_range' && typeof value === 'object') {
-          if (value.start) queryParams.append('date_start', value.start);
-          if (value.end) queryParams.append('date_end', value.end);
+        if (key === 'fullName') {
+          queryParams.append('full_name', value.toString());
+        } else if (key === 'date_range' && typeof value === 'object') {
+          if (value.start) queryParams.append('arrival_from', value.start);
+          if (value.end) queryParams.append('arrival_to', value.end);
         } else {
-          queryParams.append(key, value.toString());
+          // Map frontend keys to backend keys
+          const backendKey = key === 'fullName' ? 'full_name' : key;
+          queryParams.append(backendKey, value.toString());
         }
       }
     });
 
     const { data } = await api.get(`/migrants?${queryParams.toString()}`);
-    return data;
+    
+    // Handle both paginated and non-paginated responses
+    if (data.data.data) {
+      // Paginated response
+      return {
+        data: data.data.data,
+        total: data.data.total,
+        page: data.data.current_page,
+        limit: data.data.per_page,
+        totalPages: data.data.last_page,
+      };
+    } else {
+      // Non-paginated response
+      return {
+        data: data.data,
+        total: data.data.length,
+        page: 1,
+        limit: data.data.length,
+        totalPages: 1,
+      };
+    }
   }
 
   static async searchMigrantsAllPages(filters: any): Promise<Person[]> {
@@ -39,20 +63,29 @@ export class MigrantService {
     while (hasMorePages) {
       const queryParams = new URLSearchParams();
       queryParams.append('page', currentPage.toString());
-      queryParams.append('limit', '10');
+      queryParams.append('per_page', '50'); // Larger page size for bulk search
       
-      // Add search filters
+      // Add search filters - map to backend parameter names
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined && value !== null && value !== '') {
-          queryParams.append(key, value.toString());
+          const backendKey = key === 'fullName' ? 'full_name' : key;
+          queryParams.append(backendKey, value.toString());
         }
       });
 
       try {
         const { data } = await api.get(`/migrants?${queryParams.toString()}`);
-        allResults = [...allResults, ...data.data];
         
-        hasMorePages = currentPage < data.totalPages;
+        if (data.data.data) {
+          // Paginated response
+          allResults = [...allResults, ...data.data.data];
+          hasMorePages = currentPage < data.data.last_page;
+        } else {
+          // Non-paginated response
+          allResults = [...allResults, ...data.data];
+          hasMorePages = false;
+        }
+        
         currentPage++;
       } catch (error) {
         console.error('Error fetching page:', currentPage, error);
