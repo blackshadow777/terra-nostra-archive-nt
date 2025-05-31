@@ -9,12 +9,14 @@ import { SearchFilters } from "@/types";
 
 const Index = () => {
   const [searchData, setSearchData] = useState<SearchFilters>({
-    firstName: "",
-    lastName: "",
-    yearFrom: "",
-    yearTo: "",
-    region: "",
-    settlement: ""
+    fullName: "",
+    christian_name: "",
+    surname: "",
+    date_of_birth: "",
+    date_of_arrival_nt: "",
+    place_of_birth: "",
+    town_or_city: "",
+    occupation: ""
   });
   const [showResults, setShowResults] = useState(false);
 

@@ -67,15 +67,13 @@ export const useAdmin = () => {
 
   const deleteAdmin = useCallback(async (id: number) => {
     try {
-      const success = await ApiService.deleteAdmin(id);
-      if (success) {
-        setAdmins(prev => prev.filter(admin => admin.id !== id));
-        toast({
-          title: "Success",
-          description: "Admin deleted successfully"
-        });
-      }
-      return success;
+      await ApiService.deleteAdmin(id);
+      setAdmins(prev => prev.filter(admin => admin.id !== id));
+      toast({
+        title: "Success",
+        description: "Admin deleted successfully"
+      });
+      return true;
     } catch (error) {
       toast({
         title: "Error",

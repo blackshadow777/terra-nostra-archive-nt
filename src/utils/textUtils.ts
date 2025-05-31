@@ -10,11 +10,11 @@ export const sanitizeText = (text: string): string => {
  * Sanitizes all string values in an object
  */
 export const sanitizeFilters = <T extends Record<string, any>>(filters: T): T => {
-  const sanitized = { ...filters };
+  const sanitized = { ...filters } as T;
   
   Object.keys(sanitized).forEach((key) => {
     if (typeof sanitized[key] === 'string') {
-      sanitized[key] = sanitizeText(sanitized[key]);
+      (sanitized as any)[key] = sanitizeText(sanitized[key]);
     }
   });
   
