@@ -22,9 +22,7 @@ const sortFields: { value: keyof Person; label: string }[] = [
   { value: 'christian_name', label: 'First Name' },
   { value: 'surname', label: 'Last Name' },
   { value: 'date_of_birth', label: 'Birth Year' },
-  { value: 'date_of_arrival_nt', label: 'Arrival Date' },
   { value: 'place_of_birth', label: 'Place of Birth' },
-  { value: 'town_or_city', label: 'Town/City' },
   { value: 'occupation', label: 'Occupation' },
 ];
 
@@ -104,7 +102,7 @@ export default function MigrantFilters({
               </SelectTrigger>
               <SelectContent className="bg-slate-700 border-slate-600">
                 {sortFields.map((field) => (
-                  <SelectItem key={field.value} value={field.value} className="text-white">
+                  <SelectItem key={String(field.value)} value={String(field.value)} className="text-white">
                     {field.label}
                   </SelectItem>
                 ))}

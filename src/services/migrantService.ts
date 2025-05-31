@@ -12,7 +12,7 @@ export class MigrantService {
     queryParams.append('limit', params.limit.toString());
     
     // Add sorting
-    queryParams.append('sort_field', params.sort.field);
+    queryParams.append('sort_field', String(params.sort.field));
     queryParams.append('sort_direction', params.sort.direction);
     
     // Add filters
@@ -29,6 +29,43 @@ export class MigrantService {
 
     const { data } = await api.get(`/migrants?${queryParams.toString()}`);
     return data;
+  }
+
+  static async searchMigrantsAllPages(filters: any): Promise<Person[]> {
+    let allResults: Person[] = [];
+    let currentPage = 1;
+    let hasMorePages = true;
+    
+    while (hasMorePages) {
+      const queryParams = new URLSearchParams();
+      queryParams.append('page', currentPage.toString());
+      queryParams.append('limit', '10');
+      
+      // Add search filters
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          queryParams.append(key, value.toString());
+        }
+      });
+
+      try {
+        const { data } = await api.get(`/migrants?${queryParams.toString()}`);
+        allResults = [...allResults, ...data.data];
+        
+        hasMorePages = currentPage < data.totalPages;
+        currentPage++;
+      } catch (error) {
+        console.error('Error fetching page:', currentPage, error);
+        hasMorePages = false;
+      }
+    }
+    
+    return allResults;
+  }
+
+  static async getMigrantById(id: number): Promise<Person> {
+    const { data } = await api.get(`/migrants/${id}`);
+    return data.data;
   }
 
   static async createMigrant(migrant: Omit<Person, 'person_id'>): Promise<Person> {
@@ -57,5 +94,22 @@ export class MigrantService {
       },
     });
     return data.data;
+  }
+
+  static async getMigrantPhotos(id: number): Promise<string[]> {
+    const { data } = await api.get(`/migrants/${id}/photos`);
+    return data.data;
+  }
+
+  static async setAsProfilePhoto(photoId: string): Promise<void> {
+    await api.post(`/migrants/photos/${photoId}/set-as-profile`);
+  }
+
+  static async updatePhotoCaption(photoId: string, caption: string): Promise<void> {
+    await api.put(`/migrants/photos/${photoId}/caption`, { caption });
+  }
+
+  static async deletePhoto(photoId: string): Promise<void> {
+    await api.delete(`/migrants/photos/${photoId}`);
   }
 }

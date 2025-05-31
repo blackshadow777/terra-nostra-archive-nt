@@ -1,4 +1,6 @@
 
+import { Person } from '@/types';
+
 export interface SortOption {
   field: keyof Person;
   direction: 'asc' | 'desc';
@@ -9,7 +11,6 @@ export interface FilterOptions {
   christian_name: string;
   surname: string;
   date_of_birth: string;
-  date_of_arrival_nt: string;
   place_of_birth: string;
   town_or_city: string;
   occupation: string;
