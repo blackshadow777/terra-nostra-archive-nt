@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Search, Filter, ChevronDown, ChevronUp } from "lucide-react";
 import { SearchFilters } from "@/types";
+import { sanitizeFilters, parseFullName } from "@/utils/textUtils";
 
 interface SearchInterfaceProps {
   onSearch: (searchData: SearchFilters) => void;
@@ -14,66 +15,54 @@ interface SearchInterfaceProps {
 
 const SearchInterface = ({ onSearch }: SearchInterfaceProps) => {
   const [searchForm, setSearchForm] = useState<SearchFilters>({
-    firstName: "",
-    lastName: "",
-    yearFrom: "",
-    yearTo: "",
-    region: "",
-    settlement: ""
+    fullName: "",
+    christian_name: "",
+    surname: "",
+    date_of_birth: "",
+    date_of_arrival_nt: "",
+    place_of_birth: "",
+    town_or_city: "",
+    occupation: ""
   });
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [fullNameSearch, setFullNameSearch] = useState("");
 
   const handleInputChange = (field: keyof SearchFilters, value: string) => {
-    // Trim spaces from the end of the input
-    const trimmedValue = value.trimEnd();
-    setSearchForm(prev => ({ ...prev, [field]: trimmedValue }));
+    setSearchForm(prev => ({ ...prev, [field]: value }));
   };
 
   const handleFullNameChange = (value: string) => {
-    // Trim spaces from the end of the input
-    const trimmedValue = value.trimEnd();
-    setFullNameSearch(trimmedValue);
+    setFullNameSearch(value);
     
-    // Split full name into first and last name
-    const nameParts = trimmedValue.split(' ');
-    if (nameParts.length >= 2) {
-      const firstName = nameParts[0];
-      const lastName = nameParts.slice(1).join(' ');
-      setSearchForm(prev => ({ 
-        ...prev, 
-        firstName: firstName,
-        lastName: lastName 
-      }));
-    } else if (nameParts.length === 1) {
-      setSearchForm(prev => ({ 
-        ...prev, 
-        firstName: nameParts[0],
-        lastName: "" 
-      }));
-    }
+    // Parse full name and update individual name fields
+    const { christian_name, surname } = parseFullName(value);
+    setSearchForm(prev => ({ 
+      ...prev, 
+      fullName: value,
+      christian_name,
+      surname 
+    }));
   };
 
   const handleSearch = () => {
-    // Final trim on all fields before searching
-    const trimmedSearchData = Object.keys(searchForm).reduce((acc, key) => {
-      acc[key as keyof SearchFilters] = searchForm[key as keyof SearchFilters].trim();
-      return acc;
-    }, {} as SearchFilters);
-    
-    console.log("Searching with:", trimmedSearchData);
-    onSearch(trimmedSearchData);
+    // Sanitize all filters before searching
+    const sanitizedFilters = sanitizeFilters(searchForm);
+    console.log("Searching with:", sanitizedFilters);
+    onSearch(sanitizedFilters);
   };
 
   const handleClearFilters = () => {
-    setSearchForm({
-      firstName: "",
-      lastName: "",
-      yearFrom: "",
-      yearTo: "",
-      region: "",
-      settlement: ""
-    });
+    const emptyFilters: SearchFilters = {
+      fullName: "",
+      christian_name: "",
+      surname: "",
+      date_of_birth: "",
+      date_of_arrival_nt: "",
+      place_of_birth: "",
+      town_or_city: "",
+      occupation: ""
+    };
+    setSearchForm(emptyFilters);
     setFullNameSearch("");
   };
 
@@ -98,7 +87,7 @@ const SearchInterface = ({ onSearch }: SearchInterfaceProps) => {
             </CardTitle>
           </CardHeader>
           <CardContent className="p-6">
-            {/* Simple Full Name Search */}
+            {/* Quick Full Name Search */}
             <div className="mb-6">
               <Label htmlFor="fullName" className="text-terra-navy font-medium text-lg mb-3 block">
                 Quick Search by Full Name
@@ -143,54 +132,54 @@ const SearchInterface = ({ onSearch }: SearchInterfaceProps) => {
                 <CollapsibleContent className="space-y-6">
                   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div className="space-y-2">
-                      <Label htmlFor="firstName" className="text-terra-navy font-medium">
+                      <Label htmlFor="christian_name" className="text-terra-navy font-medium">
                         First Name
                       </Label>
                       <Input
-                        id="firstName"
-                        value={searchForm.firstName}
-                        onChange={(e) => handleInputChange("firstName", e.target.value)}
+                        id="christian_name"
+                        value={searchForm.christian_name}
+                        onChange={(e) => handleInputChange("christian_name", e.target.value)}
                         placeholder="e.g., Giuseppe"
                         className="border-terra-beige focus:border-terra-red"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="lastName" className="text-terra-navy font-medium">
+                      <Label htmlFor="surname" className="text-terra-navy font-medium">
                         Last Name
                       </Label>
                       <Input
-                        id="lastName"
-                        value={searchForm.lastName}
-                        onChange={(e) => handleInputChange("lastName", e.target.value)}
+                        id="surname"
+                        value={searchForm.surname}
+                        onChange={(e) => handleInputChange("surname", e.target.value)}
                         placeholder="e.g., Rossi"
                         className="border-terra-beige focus:border-terra-red"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="region" className="text-terra-navy font-medium">
-                        Italian Region
+                      <Label htmlFor="place_of_birth" className="text-terra-navy font-medium">
+                        Place of Birth
                       </Label>
                       <Input
-                        id="region"
-                        value={searchForm.region}
-                        onChange={(e) => handleInputChange("region", e.target.value)}
-                        placeholder="e.g., Veneto, Sicily"
+                        id="place_of_birth"
+                        value={searchForm.place_of_birth}
+                        onChange={(e) => handleInputChange("place_of_birth", e.target.value)}
+                        placeholder="e.g., Venice, Italy"
                         className="border-terra-beige focus:border-terra-red"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="yearFrom" className="text-terra-navy font-medium">
-                        Arrival Year (From)
+                      <Label htmlFor="date_of_birth" className="text-terra-navy font-medium">
+                        Birth Year
                       </Label>
                       <Input
-                        id="yearFrom"
+                        id="date_of_birth"
                         type="number"
-                        value={searchForm.yearFrom}
-                        onChange={(e) => handleInputChange("yearFrom", e.target.value)}
-                        placeholder="1920"
+                        value={searchForm.date_of_birth}
+                        onChange={(e) => handleInputChange("date_of_birth", e.target.value)}
+                        placeholder="1925"
                         min="1800"
                         max="2000"
                         className="border-terra-beige focus:border-terra-red"
@@ -198,30 +187,40 @@ const SearchInterface = ({ onSearch }: SearchInterfaceProps) => {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="yearTo" className="text-terra-navy font-medium">
-                        Arrival Year (To)
+                      <Label htmlFor="date_of_arrival_nt" className="text-terra-navy font-medium">
+                        Arrival Date (NT)
                       </Label>
                       <Input
-                        id="yearTo"
-                        type="number"
-                        value={searchForm.yearTo}
-                        onChange={(e) => handleInputChange("yearTo", e.target.value)}
-                        placeholder="1980"
-                        min="1800"
-                        max="2000"
+                        id="date_of_arrival_nt"
+                        type="date"
+                        value={searchForm.date_of_arrival_nt}
+                        onChange={(e) => handleInputChange("date_of_arrival_nt", e.target.value)}
                         className="border-terra-beige focus:border-terra-red"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="settlement" className="text-terra-navy font-medium">
+                      <Label htmlFor="town_or_city" className="text-terra-navy font-medium">
                         NT Settlement
                       </Label>
                       <Input
-                        id="settlement"
-                        value={searchForm.settlement}
-                        onChange={(e) => handleInputChange("settlement", e.target.value)}
+                        id="town_or_city"
+                        value={searchForm.town_or_city}
+                        onChange={(e) => handleInputChange("town_or_city", e.target.value)}
                         placeholder="e.g., Darwin, Katherine"
+                        className="border-terra-beige focus:border-terra-red"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="occupation" className="text-terra-navy font-medium">
+                        Occupation
+                      </Label>
+                      <Input
+                        id="occupation"
+                        value={searchForm.occupation}
+                        onChange={(e) => handleInputChange("occupation", e.target.value)}
+                        placeholder="e.g., Construction Worker"
                         className="border-terra-beige focus:border-terra-red"
                       />
                     </div>

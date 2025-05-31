@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -49,13 +50,13 @@ const SearchResults = ({ searchData, showResults }: SearchResultsProps) => {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {results.slice(0, 4).map((person) => (
               <Card 
-                key={person.id}
-                onClick={() => handleResultClick(person.id)}
+                key={person.person_id}
+                onClick={() => handleResultClick(person.person_id)}
                 className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-terra-beige/30 hover:border-terra-red/30 hover:scale-105"
               >
                 <CardContent className="p-0">
                   <div className="aspect-[4/3] bg-gradient-to-br from-terra-beige to-terra-beige/50 relative overflow-hidden">
-                    {person.hasPhoto ? (
+                    {person.has_photo ? (
                       <div className="w-full h-full bg-[url('https://images.unsplash.com/photo-1482938289607-e9573fc25ebb')] bg-cover bg-center opacity-70">
                         <div className="w-full h-full bg-gradient-to-t from-terra-navy/40 to-transparent"></div>
                       </div>
@@ -79,12 +80,12 @@ const SearchResults = ({ searchData, showResults }: SearchResultsProps) => {
                     <div className="space-y-2 text-sm">
                       <div className="flex items-center gap-2 text-terra-navy/70">
                         <Calendar className="w-4 h-4" />
-                        <span>Born {person.birthYear} • Arrived {person.arrivalYear}</span>
+                        <span>Born {person.date_of_birth} • Arrived {new Date(person.migration.date_of_arrival_nt).getFullYear()}</span>
                       </div>
                       
                       <div className="flex items-center gap-2 text-terra-navy/70">
                         <MapPin className="w-4 h-4" />
-                        <span>From {person.region} to {person.settlement}</span>
+                        <span>From {person.place_of_birth} to {person.residence.town_or_city}</span>
                       </div>
                     </div>
 
@@ -93,13 +94,13 @@ const SearchResults = ({ searchData, showResults }: SearchResultsProps) => {
                         variant="outline" 
                         className="border-terra-green text-terra-green text-xs"
                       >
-                        {person.region}
+                        {person.place_of_birth.split(',').pop()?.trim() || 'Italy'}
                       </Badge>
                       <Badge 
                         variant="outline" 
                         className="border-terra-navy text-terra-navy text-xs"
                       >
-                        {person.settlement}
+                        {person.residence.town_or_city}
                       </Badge>
                     </div>
                   </div>
@@ -133,13 +134,13 @@ const SearchResults = ({ searchData, showResults }: SearchResultsProps) => {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {results.map((person) => (
               <Card 
-                key={person.id}
-                onClick={() => handleResultClick(person.id)}
+                key={person.person_id}
+                onClick={() => handleResultClick(person.person_id)}
                 className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-terra-beige/30 hover:border-terra-red/30 hover:scale-105"
               >
                 <CardContent className="p-0">
                   <div className="aspect-[4/3] bg-gradient-to-br from-terra-beige to-terra-beige/50 relative overflow-hidden">
-                    {person.hasPhoto ? (
+                    {person.has_photo ? (
                       <div className="w-full h-full bg-[url('https://images.unsplash.com/photo-1482938289607-e9573fc25ebb')] bg-cover bg-center opacity-70">
                         <div className="w-full h-full bg-gradient-to-t from-terra-navy/40 to-transparent"></div>
                       </div>
@@ -163,12 +164,12 @@ const SearchResults = ({ searchData, showResults }: SearchResultsProps) => {
                     <div className="space-y-2 text-sm">
                       <div className="flex items-center gap-2 text-terra-navy/70">
                         <Calendar className="w-4 h-4" />
-                        <span>Born {person.birthYear} • Arrived {person.arrivalYear}</span>
+                        <span>Born {person.date_of_birth} • Arrived {new Date(person.migration.date_of_arrival_nt).getFullYear()}</span>
                       </div>
                       
                       <div className="flex items-center gap-2 text-terra-navy/70">
                         <MapPin className="w-4 h-4" />
-                        <span>From {person.region} to {person.settlement}</span>
+                        <span>From {person.place_of_birth} to {person.residence.town_or_city}</span>
                       </div>
                     </div>
 
@@ -177,13 +178,13 @@ const SearchResults = ({ searchData, showResults }: SearchResultsProps) => {
                         variant="outline" 
                         className="border-terra-green text-terra-green text-xs"
                       >
-                        {person.region}
+                        {person.place_of_birth.split(',').pop()?.trim() || 'Italy'}
                       </Badge>
                       <Badge 
                         variant="outline" 
                         className="border-terra-navy text-terra-navy text-xs"
                       >
-                        {person.settlement}
+                        {person.residence.town_or_city}
                       </Badge>
                     </div>
                   </div>

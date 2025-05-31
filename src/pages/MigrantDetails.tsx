@@ -1,36 +1,17 @@
+
 import { useParams, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Calendar, MapPin, User, Users, FileText, Loader2 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Migrant } from "@/types";
-import { ApiService } from "@/services/apiService";
+import { usePersonById } from "@/hooks/usePersonSearch";
 
 const MigrantDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [migrant, setMigrant] = useState<Migrant | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  
-  useEffect(() => {
-    const loadMigrant = async () => {
-      if (!id) return;
-      
-      try {
-        const data = await ApiService.getMigrantById(parseInt(id));
-        setMigrant(data);
-      } catch (error) {
-        console.error('Failed to load migrant:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadMigrant();
-  }, [id]);
+  const { data: person, isLoading, error } = usePersonById(parseInt(id || '0'));
 
   if (isLoading) {
     return (
@@ -45,7 +26,7 @@ const MigrantDetails = () => {
     );
   }
   
-  if (!migrant) {
+  if (error || !person) {
     return (
       <div className="min-h-screen bg-white">
         <Header />
@@ -80,10 +61,10 @@ const MigrantDetails = () => {
               <Card>
                 <CardContent className="p-0">
                   <div className="aspect-[3/4] bg-gradient-to-br from-terra-beige to-terra-beige/50 overflow-hidden rounded-t-lg">
-                    {migrant.mainPhoto ? (
+                    {person.has_photo && person.photos.length > 0 ? (
                       <img 
-                        src={migrant.mainPhoto} 
-                        alt={migrant.fullName}
+                        src={person.photos[0]} 
+                        alt={person.fullName}
                         className="w-full h-full object-cover"
                       />
                     ) : (
@@ -93,15 +74,15 @@ const MigrantDetails = () => {
                     )}
                   </div>
                   
-                  {migrant.photos.length > 1 && (
+                  {person.photos.length > 1 && (
                     <div className="p-4">
                       <h4 className="font-semibold text-terra-navy mb-3">Photo Gallery</h4>
                       <div className="grid grid-cols-3 gap-2">
-                        {migrant.photos.slice(1).map((photo: string, index: number) => (
+                        {person.photos.slice(1).map((photo: string, index: number) => (
                           <div key={index} className="aspect-square bg-terra-beige/30 rounded overflow-hidden">
                             <img 
                               src={photo} 
-                              alt={`${migrant.fullName} ${index + 2}`}
+                              alt={`${person.fullName} ${index + 2}`}
                               className="w-full h-full object-cover hover:scale-105 transition-transform cursor-pointer"
                             />
                           </div>
@@ -116,19 +97,19 @@ const MigrantDetails = () => {
             <div className="lg:col-span-2 space-y-6">
               <div>
                 <h1 className="font-playfair text-3xl lg:text-4xl font-bold text-terra-navy mb-2">
-                  {migrant.fullName}
+                  {person.fullName}
                 </h1>
-                <p className="text-lg text-terra-navy/70 mb-4">{migrant.occupation}</p>
+                <p className="text-lg text-terra-navy/70 mb-4">{person.occupation}</p>
                 
                 <div className="flex flex-wrap gap-2 mb-4">
                   <Badge className="bg-terra-red text-white">
-                    {migrant.region}
+                    {person.place_of_birth.split(',').pop()?.trim() || 'Italy'}
                   </Badge>
                   <Badge variant="outline" className="border-terra-green text-terra-green">
-                    {migrant.settlement}
+                    {person.residence.town_or_city}
                   </Badge>
                   <Badge variant="outline" className="border-terra-navy text-terra-navy">
-                    Arrived {migrant.arrivalYear}
+                    Arrived {new Date(person.migration.date_of_arrival_nt).getFullYear()}
                   </Badge>
                 </div>
               </div>
@@ -144,19 +125,21 @@ const MigrantDetails = () => {
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
                       <span className="font-medium text-terra-navy">Birth:</span>
-                      <p className="text-terra-navy/70">{migrant.birthYear} in {migrant.birthPlace}</p>
+                      <p className="text-terra-navy/70">{person.date_of_birth} in {person.place_of_birth}</p>
                     </div>
-                    <div>
-                      <span className="font-medium text-terra-navy">Death:</span>
-                      <p className="text-terra-navy/70">{migrant.deathYear} in {migrant.residence.homeAtDeath}</p>
-                    </div>
+                    {person.date_of_death && (
+                      <div>
+                        <span className="font-medium text-terra-navy">Death:</span>
+                        <p className="text-terra-navy/70">{person.date_of_death} in {person.residence.home_at_death}</p>
+                      </div>
+                    )}
                     <div>
                       <span className="font-medium text-terra-navy">Arrival in NT:</span>
-                      <p className="text-terra-navy/70">{migrant.arrivalYear}</p>
+                      <p className="text-terra-navy/70">{new Date(person.migration.date_of_arrival_nt).toLocaleDateString()}</p>
                     </div>
                     <div>
                       <span className="font-medium text-terra-navy">Occupation:</span>
-                      <p className="text-terra-navy/70">{migrant.occupation}</p>
+                      <p className="text-terra-navy/70">{person.occupation}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -166,11 +149,11 @@ const MigrantDetails = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-terra-navy">
                     <FileText className="w-5 h-5" />
-                    Biography
+                    Additional Notes
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-terra-navy/80 leading-relaxed">{migrant.biography}</p>
+                  <p className="text-terra-navy/80 leading-relaxed">{person.additional_notes}</p>
                 </CardContent>
               </Card>
 
@@ -184,11 +167,11 @@ const MigrantDetails = () => {
                 <CardContent className="space-y-3">
                   <div>
                     <span className="font-medium text-terra-navy">Parents:</span>
-                    <p className="text-terra-navy/70">{migrant.family.parents}</p>
+                    <p className="text-terra-navy/70">{person.family.names_of_parents}</p>
                   </div>
                   <div>
                     <span className="font-medium text-terra-navy">Children:</span>
-                    <p className="text-terra-navy/70">{migrant.family.children}</p>
+                    <p className="text-terra-navy/70">{person.family.names_of_children}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -204,15 +187,15 @@ const MigrantDetails = () => {
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
                       <span className="font-medium text-terra-navy">Date:</span>
-                      <p className="text-terra-navy/70">{migrant.naturalization.date}</p>
+                      <p className="text-terra-navy/70">{new Date(person.naturalization.date_of_naturalisation).toLocaleDateString()}</p>
                     </div>
                     <div>
                       <span className="font-medium text-terra-navy">Certificate:</span>
-                      <p className="text-terra-navy/70">{migrant.naturalization.certificate}</p>
+                      <p className="text-terra-navy/70">{person.naturalization.no_of_cert}</p>
                     </div>
                     <div>
                       <span className="font-medium text-terra-navy">Issued at:</span>
-                      <p className="text-terra-navy/70">{migrant.naturalization.issuedAt}</p>
+                      <p className="text-terra-navy/70">{person.naturalization.issued_at}</p>
                     </div>
                   </div>
                 </CardContent>

@@ -1,35 +1,4 @@
 
-export interface Migrant {
-  id: number;
-  fullName: string;
-  firstName: string;
-  lastName: string;
-  birthYear: number;
-  birthPlace: string;
-  deathYear?: number;
-  arrivalYear: number;
-  region: string;
-  settlement: string;
-  occupation: string;
-  mainPhoto?: string;
-  photos: string[];
-  biography: string;
-  family: {
-    parents: string;
-    children: string;
-  };
-  naturalization: {
-    date: string;
-    certificate: string;
-    issuedAt: string;
-  };
-  residence: {
-    townOrCity: string;
-    homeAtDeath: string;
-  };
-  hasPhoto: boolean;
-}
-
 export interface Person {
   surname: string;
   person_id: number;
@@ -65,6 +34,17 @@ export interface Person {
   };
 }
 
+export interface SearchFilters {
+  fullName: string;
+  christian_name: string;
+  surname: string;
+  date_of_birth: string;
+  date_of_arrival_nt: string;
+  place_of_birth: string;
+  town_or_city: string;
+  occupation: string;
+}
+
 export interface Admin {
   id: number;
   name: string;
@@ -74,15 +54,6 @@ export interface Admin {
   profilePicture?: string;
   createdAt: string;
   lastLogin?: string;
-}
-
-export interface SearchFilters {
-  firstName: string;
-  lastName: string;
-  yearFrom: string;
-  yearTo: string;
-  region: string;
-  settlement: string;
 }
 
 export interface AnalyticsData {

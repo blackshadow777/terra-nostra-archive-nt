@@ -1,10 +1,10 @@
 
 import { useState, useCallback, useEffect } from 'react';
-import { Migrant, SearchFilters } from '@/types';
+import { Person, SearchFilters } from '@/types';
 import { ApiService } from '@/services/apiService';
 
 export const useSearch = () => {
-  const [results, setResults] = useState<Migrant[]>([]);
+  const [results, setResults] = useState<Person[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
@@ -15,10 +15,10 @@ export const useSearch = () => {
     setHasSearched(true);
     
     try {
-      const results = await ApiService.searchMigrants(filters);
+      const results = await ApiService.searchPersons(filters);
       setResults(results);
     } catch (err) {
-      setError('Failed to search migrants');
+      setError('Failed to search persons');
       console.error('Search error:', err);
     } finally {
       setIsLoading(false);
@@ -28,10 +28,10 @@ export const useSearch = () => {
   const getFeaturedResults = useCallback(async () => {
     setIsLoading(true);
     try {
-      const allMigrants = await ApiService.getAllMigrants();
-      setResults(allMigrants.slice(0, 4));
+      const response = await ApiService.getAllPersons(1, 4);
+      setResults(response.data);
     } catch (err) {
-      setError('Failed to load featured migrants');
+      setError('Failed to load featured persons');
       console.error('Featured results error:', err);
     } finally {
       setIsLoading(false);
